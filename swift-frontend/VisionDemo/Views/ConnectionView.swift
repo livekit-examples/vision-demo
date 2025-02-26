@@ -45,9 +45,10 @@ struct ConnectionView: View {
                         isConnecting = false
                     }
                 }) {
-                    Text("Connect")
+                    Text(isConnecting ? "Connecting..." : "Connect")
                         .font(.headline)
                         .frame(maxWidth: 280)
+                        .animation(.none, value: isConnecting)
                 }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
