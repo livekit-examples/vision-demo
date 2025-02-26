@@ -5,63 +5,47 @@ import SwiftUI
 struct AgentView: View {
     @EnvironmentObject var chatContext: ChatContext
     @Environment(\.colorScheme) private var colorScheme
-    @State private var isPulsing = false
 
     var body: some View {
         ZStack {
-            Circle()
-                .fill(colorScheme == .dark ? Color.blue.opacity(0.4) : Color.blue.opacity(0.2))
-                .frame(width: 100, height: 100)
-                .scaleEffect(isPulsing ? 1.1 : 1.0)
-                .opacity(isPulsing ? 0.8 : 1.0)
-                .animation(
-                    isPulsing ? 
-                        Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true) : 
-                        .default,
-                    value: isPulsing
-                )
-
             if let agent = chatContext.agentParticipant {
                 AgentAudioVisualizer(agent: agent)
             }
-        }.frame(width: 100, height: 100)
-            .onAppear {
-                updatePulsing()
-            }
-            .onChange(of: chatContext.agentParticipant) {
-                updatePulsing()
-            }
-    }
-
-    private func updatePulsing() {
-        isPulsing =
-        chatContext.agentParticipant == nil
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
 struct AgentAudioVisualizer: View {
+    @EnvironmentObject var room: Room
     @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var agent: RemoteParticipant
-
-    private var opacity: Double {
-        switch colorScheme {
-        case .dark:
-            return 0.8
-        default:
-            return 0.5
-        }
-    }
+    
+    private var barSpacing: CGFloat { room.localParticipant.isCameraEnabled() ? 4 : 12}
 
     var body: some View {
-        ZStack {
-            if let track = agent.firstAudioTrack {
-                BarAudioVisualizer(
-                    audioTrack: track, barColor: .blue, barCount: 3, barMinOpacity: opacity
-                )
-                .frame(width: 64, height: 64)
-            } else {
-                Circle().fill(.blue.opacity(opacity)).frame(width: 20, height: 20)
+        GeometryReader { geometry in
+            let availableWidth = geometry.size.width - (barSpacing * 2)
+            let barWidth = (availableWidth - (4 * barSpacing)) / 5
+            let computedSpacingFactor = barSpacing / availableWidth
+
+            ZStack {
+                if let track = agent.firstAudioTrack {
+                    BarAudioVisualizer(
+                        audioTrack: track,
+                        barColor: colorScheme == .dark ? .white : .black,
+                        barCount: 5,
+                        barSpacingFactor: computedSpacingFactor,
+                        barMinOpacity: 1
+                    )
+                    .frame(width: availableWidth, height: availableWidth)
+                } else {
+                    Circle()
+                        .fill(.blue)
+                        .frame(width: barWidth, height: barWidth)
+                }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
     }
 }
