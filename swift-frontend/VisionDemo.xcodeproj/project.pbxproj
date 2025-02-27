@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B56EDEB62D0D004B00C0EC69 /* LiveKitKrispNoiseFilter in Frameworks */ = {isa = PBXBuildFile; productRef = B56EDEB52D0D004B00C0EC69 /* LiveKitKrispNoiseFilter */; };
+		B5835B5D2D67FA960066BD5C /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = B5835B5C2D67FA960066BD5C /* LiveKit */; };
+		B5835B602D67FAA80066BD5C /* LiveKitComponents in Frameworks */ = {isa = PBXBuildFile; productRef = B5835B5F2D67FAA80066BD5C /* LiveKitComponents */; };
+		B5835B632D67FAB60066BD5C /* LiveKitKrispNoiseFilter in Frameworks */ = {isa = PBXBuildFile; productRef = B5835B622D67FAB60066BD5C /* LiveKitKrispNoiseFilter */; };
+		B5835B652D67FABF0066BD5C /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = B5835B642D67FABF0066BD5C /* LiveKit */; };
 		B5C2EF652D0977AB00FAC766 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5C2EF642D0977AB00FAC766 /* ReplayKit.framework */; };
 		B5C2EF712D09781800FAC766 /* BroadcastExtension.appex in CopyFiles */ = {isa = PBXBuildFile; fileRef = B5C2EF622D0977AB00FAC766 /* BroadcastExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B5C2EF9D2D0980E700FAC766 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = B5C2EF9C2D0980E700FAC766 /* LiveKit */; };
 		B5C2EFA02D0980F400FAC766 /* LiveKitComponents in Frameworks */ = {isa = PBXBuildFile; productRef = B5C2EF9F2D0980F400FAC766 /* LiveKitComponents */; };
-		B5C2EFC32D0982C500FAC766 /* LiveKit in Frameworks */ = {isa = PBXBuildFile; productRef = B5C2EFC22D0982C500FAC766 /* LiveKit */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,9 +87,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B56EDEB62D0D004B00C0EC69 /* LiveKitKrispNoiseFilter in Frameworks */,
+				B5835B5D2D67FA960066BD5C /* LiveKit in Frameworks */,
+				B5835B632D67FAB60066BD5C /* LiveKitKrispNoiseFilter in Frameworks */,
 				B5C2EF9D2D0980E700FAC766 /* LiveKit in Frameworks */,
 				B5C2EFA02D0980F400FAC766 /* LiveKitComponents in Frameworks */,
+				B5835B602D67FAA80066BD5C /* LiveKitComponents in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,7 +100,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5C2EF652D0977AB00FAC766 /* ReplayKit.framework in Frameworks */,
-				B5C2EFC32D0982C500FAC766 /* LiveKit in Frameworks */,
+				B5835B652D67FABF0066BD5C /* LiveKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,7 +158,9 @@
 			packageProductDependencies = (
 				B5C2EF9C2D0980E700FAC766 /* LiveKit */,
 				B5C2EF9F2D0980F400FAC766 /* LiveKitComponents */,
-				B56EDEB52D0D004B00C0EC69 /* LiveKitKrispNoiseFilter */,
+				B5835B5C2D67FA960066BD5C /* LiveKit */,
+				B5835B5F2D67FAA80066BD5C /* LiveKitComponents */,
+				B5835B622D67FAB60066BD5C /* LiveKitKrispNoiseFilter */,
 			);
 			productName = Vision;
 			productReference = B5C2EF202D08AF6900FAC766 /* VisionDemo.app */;
@@ -177,7 +183,7 @@
 			);
 			name = BroadcastExtension;
 			packageProductDependencies = (
-				B5C2EFC22D0982C500FAC766 /* LiveKit */,
+				B5835B642D67FABF0066BD5C /* LiveKit */,
 			);
 			productName = BroadcastExtension;
 			productReference = B5C2EF622D0977AB00FAC766 /* BroadcastExtension.appex */;
@@ -211,9 +217,9 @@
 			mainGroup = B5C2EF172D08AF6900FAC766;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				B5C2EFC02D0982A600FAC766 /* XCRemoteSwiftPackageReference "client-sdk-swift" */,
-				B5C2EFC12D0982B500FAC766 /* XCRemoteSwiftPackageReference "components-swift" */,
-				B56EDEB42D0D004B00C0EC69 /* XCRemoteSwiftPackageReference "swift-krisp-noise-filter" */,
+				B5835B5B2D67FA960066BD5C /* XCRemoteSwiftPackageReference "client-sdk-swift" */,
+				B5835B5E2D67FAA80066BD5C /* XCRemoteSwiftPackageReference "components-swift" */,
+				B5835B612D67FAB60066BD5C /* XCRemoteSwiftPackageReference "swift-krisp-noise-filter" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B5C2EF212D08AF6900FAC766 /* Products */;
@@ -573,23 +579,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B56EDEB42D0D004B00C0EC69 /* XCRemoteSwiftPackageReference "swift-krisp-noise-filter" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/livekit/swift-krisp-noise-filter";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.7;
-			};
-		};
-		B5C2EFC02D0982A600FAC766 /* XCRemoteSwiftPackageReference "client-sdk-swift" */ = {
+		B5835B5B2D67FA960066BD5C /* XCRemoteSwiftPackageReference "client-sdk-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/livekit/client-sdk-swift";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.19;
+				branch = main;
+				kind = branch;
 			};
 		};
-		B5C2EFC12D0982B500FAC766 /* XCRemoteSwiftPackageReference "components-swift" */ = {
+		B5835B5E2D67FAA80066BD5C /* XCRemoteSwiftPackageReference "components-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/livekit/components-swift";
 			requirement = {
@@ -597,13 +595,36 @@
 				minimumVersion = 0.1.1;
 			};
 		};
+		B5835B612D67FAB60066BD5C /* XCRemoteSwiftPackageReference "swift-krisp-noise-filter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/livekit/swift-krisp-noise-filter";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.7;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B56EDEB52D0D004B00C0EC69 /* LiveKitKrispNoiseFilter */ = {
+		B5835B5C2D67FA960066BD5C /* LiveKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B56EDEB42D0D004B00C0EC69 /* XCRemoteSwiftPackageReference "swift-krisp-noise-filter" */;
+			package = B5835B5B2D67FA960066BD5C /* XCRemoteSwiftPackageReference "client-sdk-swift" */;
+			productName = LiveKit;
+		};
+		B5835B5F2D67FAA80066BD5C /* LiveKitComponents */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5835B5E2D67FAA80066BD5C /* XCRemoteSwiftPackageReference "components-swift" */;
+			productName = LiveKitComponents;
+		};
+		B5835B622D67FAB60066BD5C /* LiveKitKrispNoiseFilter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5835B612D67FAB60066BD5C /* XCRemoteSwiftPackageReference "swift-krisp-noise-filter" */;
 			productName = LiveKitKrispNoiseFilter;
+		};
+		B5835B642D67FABF0066BD5C /* LiveKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5835B5B2D67FA960066BD5C /* XCRemoteSwiftPackageReference "client-sdk-swift" */;
+			productName = LiveKit;
 		};
 		B5C2EF9C2D0980E700FAC766 /* LiveKit */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -612,11 +633,6 @@
 		B5C2EF9F2D0980F400FAC766 /* LiveKitComponents */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = LiveKitComponents;
-		};
-		B5C2EFC22D0982C500FAC766 /* LiveKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B5C2EFC02D0982A600FAC766 /* XCRemoteSwiftPackageReference "client-sdk-swift" */;
-			productName = LiveKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

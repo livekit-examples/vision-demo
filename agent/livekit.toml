@@ -1,0 +1,5 @@
+project_name = "Hosted-Agents-Vision"
+name = "VisionDemo"
+cpu = "1"
+replicas = 1
+max_replicas = 10

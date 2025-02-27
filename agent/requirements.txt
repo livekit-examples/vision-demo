@@ -1,10 +1,7 @@
 livekit-agents
-livekit-plugins-openai
-livekit-plugins-silero
-livekit-plugins-deepgram
-livekit-plugins-cartesia
+livekit-plugins-google
 python-dotenv
 livekit
 asyncio
-openai
-httpx
+google-genai
+google-ai-generativelanguage

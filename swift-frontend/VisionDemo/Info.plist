@@ -6,10 +6,6 @@
 	<false/>
 	<key>LKSandboxTokenServerId</key>
 	<string>$(LK_SANDBOX_TOKEN_SERVER_ID)</string>
-	<key>RTCAppGroupIdentifier</key>
-	<string>group.io.livekit.vision</string>
-	<key>RTCScreenSharingExtension</key>
-	<string>io.livekit.vision.broadcast</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

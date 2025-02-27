@@ -16,7 +16,7 @@ struct ConnectionView: View {
                     .fontWeight(.bold)
 
                 Text(
-                    "A sample project showcasing a conversational voice AI agent that can process a realtime video feed or screenshare."
+                    "A sample project showcasing the Gemini Multimodal Live API with realtime audio and video."
                 )
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)

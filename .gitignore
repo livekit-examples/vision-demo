@@ -5,9 +5,3 @@ swift-frontend/VisionDemo/Resources/Secrets.xcconfig
 xcuserdata
 .DS_Store
 __pycache__
-agent/debug
-
-# Ignore agent deployment files
-agent/fly.toml
-agent/Dockerfile
-agent/.dockerignore

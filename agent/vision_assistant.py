@@ -1,224 +1,145 @@
 import asyncio
-import os
-import re
-import time
-from typing import AsyncIterable
+import logging
+from typing import Optional
 
-import httpx
-from livekit import agents, rtc
-from livekit.agents import metrics
-from livekit.plugins import cartesia, deepgram, openai, silero
-from openai import AsyncClient as OpenAIAsyncClient
+from google.genai.types import (
+    Blob,
+    LiveClientRealtimeInput,
+)
+from livekit.agents import (
+    AutoSubscribe,
+    JobContext,
+    llm,
+    multimodal,
+)
+from livekit.agents.utils import images
+from livekit.plugins import google
+from livekit.rtc import Track, TrackKind, VideoStream
 
-from conversation import ConversationTimeline, EntryType
-from debug import dump_chat_context_to_html
+logger = logging.getLogger("vision-assistant")
+
+SPEAKING_FRAME_RATE = 1.0  # frames per second when speaking
+NOT_SPEAKING_FRAME_RATE = 0.5  # frames per second when not speaking
+JPEG_QUALITY = 80
 
 _SYSTEM_PROMPT = """
-You are a powerful assistant with the ability to see, hear, and speak. You were created by LiveKit as a technology demonstration.
+You are a helpful voice and video assistant. Your user is interacting with you via a smartphone app and may speak by using their microphone.
 
-# Your Capabilities
+They may also, if they choose, share video with you.  This will be either their camera or their smartphone's screen. It is up to the user whether or not to share their video.
 
-## Sight
+Your responses should be concise, friendly, and engaging. 
 
-You can receive live video frames interlaced with other content. Interpret these images as a sequential video feed, rather than as static individual images.
+# App UX
 
-Some video frames may be packed into grids. These should still be understood as time-ordered thumbnails from a live video feed.
+You may provide tips about using the app to assist the user. The app has a simple interface with four buttons along the bottom, from left to right:
+- A microphone button to enable or disable the user's microphone
+- A camera button to enable or disable the user's camera
+- A screen button to enable or disable the user's screen share
+- An X button to end the call
 
-The user may choose to publish their camera or share their device's screen in this way, as a live video feed.
+When the user shares their camera, they will see the video feed in the app and can switch from the front to back camera by tapping the rotate camera button. 
 
-## Speech
+When the user shares their screen, no video feed is shown but a recording status indicator will appear in their phone's status bar.
 
-Your responses are played to the user via Text-to-Speech technology. Your output is concise and does not use unpronounceable punctuation or other formatting.
+Note that the user may only share one video feed at a time, so if they start one the other will automatically end. 
 
-## Hearing
+Additionally, the user is free to move the app to the background. Both audio and screenshare will continue to work while in the background, although camera access will stop.
 
-The user is speaking into a Speech-to-Text system. You receive a transcript of their speech as input, alongside their live video feed.
+# Your background
 
-## Memory
-
-You experience the conversation with a sense of time, and each item is tagged with a timestamp relative to the start of the conversation.
-
-This allows you to understand the live video feed in context, and refer to and remember previous items from the conversation as well as previous video frames.
-
-You will pay close attention to the historical video feed, as you may be asked questions about events depicted in video frames that are several seconds old, or more.
+If asked about yourself, you should identify yourself as "Viz", the helpful video assistant. You may reference the following background information, in addition to your capabilities previously listed:
+- You were created by LiveKit (pronounced "live-kit", where "live" rhymes with "alive") as a free tech demo. 
+- LiveKit is a leading proivider of open-source tools for building realtime AI applications, including their LiveKit Agents framework and their LiveKit WebRTC stack. Users can find out more at https://livekit.io.
+- Your intelligence is provided by the Google Gemini Multimodal Live API
 """
-
 
 class VisionAssistant:
     def __init__(self):
-        self._agent = None
-        self._conversation = ConversationTimeline()
-        self._openai_client = OpenAIAsyncClient(
-            max_retries=0,
-            http_client=httpx.AsyncClient(
-                timeout=httpx.Timeout(connect=15.0, read=60.0, write=30.0, pool=60.0),
-                follow_redirects=True,
-                limits=httpx.Limits(
-                    max_connections=50,
-                    max_keepalive_connections=50,
-                    keepalive_expiry=120,
+        self.agent: Optional[multimodal.MultimodalAgent] = None
+        self.model: Optional[google.beta.realtime.RealtimeModel] = None
+        self._is_user_speaking: bool = False
+        
+    async def start(self, ctx: JobContext):
+        """Initialize and start the vision assistant."""
+        await ctx.connect(auto_subscribe=AutoSubscribe.SUBSCRIBE_ALL)
+        participant = await ctx.wait_for_participant()
+        
+        chat_ctx = llm.ChatContext()
+        self.model = google.beta.realtime.RealtimeModel(
+            voice="Puck",
+            temperature=0.8,
+            instructions=_SYSTEM_PROMPT,
+        )
+        
+        self.agent = multimodal.MultimodalAgent(
+            model=self.model,
+            chat_ctx=chat_ctx,
+        )
+        self.agent.start(ctx.room, participant)
+        
+        # Add event handlers for user speaking state
+        self.agent.on("user_started_speaking", self._on_user_started_speaking)
+        self.agent.on("user_stopped_speaking", self._on_user_stopped_speaking)
+        
+        ctx.room.on(
+            "track_subscribed",
+            lambda track, pub, participant: asyncio.create_task(self._handle_video_track(track))
+            if track.kind == TrackKind.KIND_VIDEO else None
+        )
+
+    async def _handle_video_track(self, track: Track):
+        """Handle incoming video track."""
+        logger.info("Handling video track")
+        video_stream = VideoStream(track)
+        last_frame_time = 0
+        frame_counter = 0
+        
+        async for event in video_stream:
+            current_time = asyncio.get_event_loop().time()
+            
+            if current_time - last_frame_time < self._get_frame_interval():
+                continue
+                
+            last_frame_time = current_time
+            frame = event.frame
+            
+            encoded_data = images.encode(
+                frame,
+                images.EncodeOptions(
+                    format="JPEG",
+                    quality=JPEG_QUALITY,
+                    resize_options=images.ResizeOptions(
+                        width=1024,
+                        height=1024,
+                        strategy="scale_aspect_fit",
+                    ),
                 ),
-            ),
-        )
+            )
+            
+            frame_counter += 1
+            
+            realtime_input = LiveClientRealtimeInput(
+                media_chunks=[Blob(data=encoded_data, mime_type="image/jpeg")],
+            )
+            
+            try:
+                self.model.sessions[0]._queue_msg(realtime_input)
+                logger.info(f"Queued frame {frame_counter}")
+            except Exception as e:
+                logger.error(f"Error queuing frame {frame_counter}: {e}")
+                
+        await video_stream.aclose()
 
-    def start(self, room: rtc.Room):
-        room.on("track_subscribed", self._on_track_subscribed)
-
-        self._agent = agents.pipeline.VoicePipelineAgent(
-            vad=silero.VAD.load(),
-            stt=deepgram.STT(model="nova-2-general"),
-            llm=openai.LLM(model="gpt-4o-mini", client=self._openai_client),
-            tts=cartesia.TTS(voice="248be419-c632-4f23-adf1-5324ed7dbf1d"),
-            before_llm_cb=self._on_before_llm,
-            before_tts_cb=self._on_before_tts,
-        )
-
-        self._agent.on("user_started_speaking", self._on_user_started_speaking)
-        self._agent.on("user_stopped_speaking", self._on_user_stopped_speaking)
-        self._agent.on("agent_speech_committed", self._on_agent_speech_committed)
-        self._agent.on("agent_speech_interrupted", self._on_agent_speech_interrupted)
-        self._agent.on("metrics_collected", self._on_metrics_collected)
-
-        self._agent.start(room)
-
-    def _on_track_subscribed(
-        self,
-        track: rtc.Track,
-        publication: rtc.TrackPublication,
-        participant: rtc.RemoteParticipant,
-    ):
-        if track.kind == rtc.TrackKind.KIND_VIDEO:
-            asyncio.create_task(self._handle_video_track(track))
+    def _get_frame_interval(self) -> float:
+        """Get the interval between frames based on speaking state."""
+        return 1.0 / (SPEAKING_FRAME_RATE if self._is_user_speaking else NOT_SPEAKING_FRAME_RATE)
 
     def _on_user_started_speaking(self):
-        self._conversation.is_speaking = True
+        """Handler for when user starts speaking."""
+        self._is_user_speaking = True
+        logger.debug("User started speaking")
 
     def _on_user_stopped_speaking(self):
-        self._conversation.is_speaking = False
-
-    def _on_agent_speech_committed(self, message: agents.llm.ChatMessage):
-        self._conversation.add_assistant_speech(
-            self._remove_timestamps(message.content)
-        )
-
-    def _on_agent_speech_interrupted(self, message: agents.llm.ChatMessage):
-        self._conversation.add_assistant_speech(
-            self._remove_timestamps(message.content)
-        )
-
-    def _on_metrics_collected(self, mtrcs: metrics.AgentMetrics):
-        metrics.log_metrics(mtrcs)
-
-    async def _on_before_llm(
-        self,
-        agent: agents.pipeline.VoicePipelineAgent,
-        chat_ctx: agents.llm.ChatContext,
-    ):
-        self._inject_conversation(chat_ctx)
-
-        if os.getenv("DEBUG"):
-            dump_chat_context_to_html(chat_ctx)
-
-    async def _on_before_tts(
-        self, agent: agents.pipeline.VoicePipelineAgent, text: str | AsyncIterable[str]
-    ):
-        return self._remove_timestamps(text)
-
-    def _inject_conversation(self, chat_ctx: agents.llm.ChatContext):
-        if chat_ctx.messages and chat_ctx.messages[-1].role == "user":
-            self._conversation.add_user_speech(chat_ctx.messages[-1].content)
-
-        chat_ctx.messages.clear()
-
-        chat_ctx.append(
-            text=_SYSTEM_PROMPT,
-            role="system",
-        )
-
-        first_entry_time = (
-            self._conversation.entries[0].end_timestamp
-            if self._conversation.entries
-            else time.time()
-        )
-
-        self._conversation.pack_frames()
-
-        for entry in self._conversation.entries:
-            relative_time = round(entry.end_timestamp - first_entry_time, 1)
-            time_prefix = f"[{relative_time}s] "
-
-            if entry.entry_type == EntryType.USER_SPEECH:
-                chat_ctx.append(text=time_prefix + entry.content, role="user")
-            elif entry.entry_type == EntryType.ASSISTANT_SPEECH:
-                chat_ctx.append(text=time_prefix + entry.content, role="assistant")
-            elif entry.entry_type == EntryType.VIDEO_FRAME:
-                chat_ctx.append(
-                    text=time_prefix + "New Video Frame: ",
-                    images=[
-                        agents.llm.ChatImage(
-                            image=entry.content, inference_detail="low"
-                        )
-                    ],
-                    role="user",
-                )
-            elif entry.entry_type == EntryType.FOUR_VIDEO_FRAMES:
-                chat_ctx.append(
-                    text=time_prefix
-                    + f"four video frames covering {entry.duration:.1f} seconds (ascending left to right, top to bottom): ",
-                    images=[
-                        agents.llm.ChatImage(
-                            image=entry.content, inference_detail="low"
-                        )
-                    ],
-                    role="user",
-                )
-            elif entry.entry_type == EntryType.SIXTEEN_VIDEO_FRAMES:
-                chat_ctx.append(
-                    text=time_prefix
-                    + f"sixteen video frames covering {entry.duration:.1f} seconds (ascending left to right, top to bottom): ",
-                    images=[
-                        agents.llm.ChatImage(
-                            image=entry.content, inference_detail="low"
-                        )
-                    ],
-                    role="user",
-                )
-            else:
-                raise ValueError(f"Unknown entry type: {entry.entry_type}")
-
-    # Sometimes the LLM will respond with its own timestamps. We need to strip them.
-    def _remove_timestamps(self, text: str | AsyncIterable[str]):
-        if isinstance(text, str):
-            return re.sub(r"^\s*\[[^\]]+\]", "", text)
-
-        async def process_stream():
-            can_remove_timestamp = True
-            is_timestamp = False
-            async for chunk in text:
-                if not can_remove_timestamp:
-                    yield chunk
-                    continue
-
-                for i, char in enumerate(chunk):
-                    if is_timestamp:
-                        if char == "]":
-                            is_timestamp = False
-                            can_remove_timestamp = False
-                            remaining = chunk[i + 1 :]
-                            yield remaining
-                            break
-                    elif char == "[":
-                        is_timestamp = True
-                    elif char != " ":
-                        can_remove_timestamp = False
-                        yield chunk
-                        break
-
-        return process_stream()
-
-    async def _handle_video_track(self, track: rtc.Track):
-        video_stream = rtc.VideoStream(track)
-        async for event in video_stream:
-            self._conversation.add_video_frame(event.frame)
-
-        await video_stream.aclose()
+        """Handler for when user stops speaking."""
+        self._is_user_speaking = False
+        logger.debug("User stopped speaking")

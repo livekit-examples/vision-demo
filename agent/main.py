@@ -1,17 +1,22 @@
+import logging
+
 from dotenv import load_dotenv
-from livekit.agents import AutoSubscribe, JobContext, WorkerOptions, cli
+from livekit.agents import (
+    JobContext,
+    WorkerOptions,
+    cli,
+)
 
 from vision_assistant import VisionAssistant
 
 load_dotenv()
 
+logger = logging.getLogger("vision-assistant")
+logger.setLevel(logging.INFO)
 
 async def entrypoint(ctx: JobContext):
-    await ctx.connect(auto_subscribe=AutoSubscribe.SUBSCRIBE_ALL)
-
     assistant = VisionAssistant()
-    assistant.start(ctx.room)
-
+    await assistant.start(ctx)
 
 if __name__ == "__main__":
     cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))

@@ -11,7 +11,5 @@
 		<key>RPBroadcastProcessMode</key>
 		<string>RPBroadcastProcessModeSampleBuffer</string>
 	</dict>
-	<key>RTCAppGroupIdentifier</key>
-	<string>group.io.livekit.vision</string>
 </dict>
 </plist>
