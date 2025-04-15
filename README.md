@@ -2,7 +2,7 @@
 
 This LiveKit example demonstrates an AI assistant that can process a realtime video feed while speaking with a user.
 
-The project contains a native iOS frontend, built on LiveKit's [Swift SDK](https://github.com/livekit/client-sdk-swift), and a backend agent, built on LiveKit's [Python Agents framework](https://github.com/livekit/agents) and the Gemini Multimodal Live API.
+The project contains a native iOS frontend, built on LiveKit's [Swift SDK](https://github.com/livekit/client-sdk-swift), and a backend agent, built on LiveKit's [Python Agents framework](https://github.com/livekit/agents) and the [Gemini Live API](https://ai.google.dev/gemini-api/docs/live).
 
 <img src="screenshot.jpg" height="512">
 
@@ -22,7 +22,7 @@ The assistant can observe and interact with you seamlessly, whether you're activ
 
 # Agent Architecture
 
-The backend agent is built on the [MultimodalAgent](https://docs.livekit.io/agents/voice-agent/multimodal/) class hooked up to the Gemini Multimodal Live API.
+The backend agent is built on the [MultimodalAgent](https://docs.livekit.io/agents/voice-agent/multimodal/) class hooked up to the Gemini Live API.
 
 Video frames are sampled at 2 frames per second while the user speaks, and 0.5 frames per second otherwise. Images are sent as JPEG at 1024x1024 max size.
 
@@ -35,7 +35,7 @@ This project is meant to be a starting point for your own project, and is easy t
 ### Prerequisites
 
 - [LiveKit Cloud](https://cloud.livekit.io) project
-- [Google Gemini API Key](https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com?project=livekittest)
+- [Google Gemini API Key](https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com)
 - Python 3
 
 ### Setup
