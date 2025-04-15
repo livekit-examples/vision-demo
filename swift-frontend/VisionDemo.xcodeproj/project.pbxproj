@@ -50,7 +50,10 @@
 		B5AFF8D22D0C08F90008976F /* Exceptions for "VisionDemo" folder in "VisionDemo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				.env.example.xcconfig,
+				.env.xcconfig,
 				Info.plist,
+				VisionDemo.xcconfig,
 			);
 			target = B5C2EF1F2D08AF6900FAC766 /* VisionDemo */;
 		};
@@ -197,7 +200,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1610;
-				LastUpgradeCheck = 1610;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					B5C2EF1F2D08AF6900FAC766 = {
 						CreatedOnToolsVersion = 16.1;
@@ -396,11 +399,11 @@
 		B5C2EF302D08AF6A00FAC766 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = B5AFF8C02D0BAC950008976F /* VisionDemo */;
-			baseConfigurationReferenceRelativePath = Resources/Secrets.xcconfig;
+			baseConfigurationReferenceRelativePath = VisionDemo.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = VisionDemo/Resources/VisionDemo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = VisionDemo/VisionDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 76TVFCUKK7;
@@ -439,11 +442,11 @@
 		B5C2EF312D08AF6A00FAC766 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = B5AFF8C02D0BAC950008976F /* VisionDemo */;
-			baseConfigurationReferenceRelativePath = Resources/Secrets.xcconfig;
+			baseConfigurationReferenceRelativePath = .env.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = VisionDemo/Resources/VisionDemo.entitlements;
+				CODE_SIGN_ENTITLEMENTS = VisionDemo/VisionDemo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 76TVFCUKK7;

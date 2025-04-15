@@ -63,7 +63,7 @@ This project is fully compatible with LiveKit's [Agents Playground](https://agen
 
 ## Running the iOS App
 
-This project includes a polished sample iOS app that you can build yourself.
+This project includes a sample iOS app that you can build yourself.
 
 ### Prerequisites
 

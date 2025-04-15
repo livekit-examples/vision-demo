@@ -16,7 +16,7 @@ struct ConnectionView: View {
                     .fontWeight(.bold)
 
                 Text(
-                    "A sample project showcasing the Gemini Multimodal Live API with realtime audio and video."
+                    "Talk to the Gemini Live API with realtime audio and video."
                 )
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
@@ -30,15 +30,17 @@ struct ConnectionView: View {
                         let participantName = "user-\(Int.random(in: 1000 ... 9999))"
 
                         do {
-                            let connectionDetails = try await tokenService.fetchConnectionDetails(
+                            if let connectionDetails = try await tokenService.fetchConnectionDetails(
                                 roomName: roomName,
                                 participantName: participantName
-                            )
-
-                            try await chatContext.connect(
-                                url: connectionDetails.serverUrl,
-                                token: connectionDetails.participantToken
-                            )
+                            ) {
+                                try await chatContext.connect(
+                                    url: connectionDetails.serverUrl,
+                                    token: connectionDetails.participantToken
+                                )
+                            } else {
+                                print("Failed to fetch connection details")
+                            }
                         } catch {
                             print("Connection error: \(error)")
                         }
