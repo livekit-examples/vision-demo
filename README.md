@@ -1,8 +1,8 @@
 # LiveKit Vision Demo
 
-This LiveKit example demonstrates an AI assistant that can process a realtime video feed while speaking with a user.
+This LiveKit sample app shows a voice AI assistant with realtime audio and video input.
 
-The project contains a native iOS frontend, built on LiveKit's [Swift SDK](https://github.com/livekit/client-sdk-swift), and a backend agent, built on LiveKit's [Python Agents framework](https://github.com/livekit/agents) and the [Gemini Live API](https://ai.google.dev/gemini-api/docs/live).
+It contains a native iOS frontend, built on LiveKit's [Swift SDK](https://github.com/livekit/client-sdk-swift), and a backend agent, built on LiveKit's [Python Agents framework](https://github.com/livekit/agents) and the [Gemini Live API](https://ai.google.dev/gemini-api/docs/live).
 
 <img src="screenshot.jpg" height="512">
 
