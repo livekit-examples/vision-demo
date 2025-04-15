@@ -8,7 +8,7 @@ from livekit.agents import (
     llm,
     multimodal,
 )
-from livekit.plugins import google
+from livekit.plugins import google, noise_cancellation
 from livekit.rtc import Track, TrackKind, VideoStream
 
 logger = logging.getLogger("vision-assistant")
@@ -70,6 +70,7 @@ class VisionAssistant:
         self.agent = multimodal.MultimodalAgent(
             model=self.model,
             chat_ctx=chat_ctx,
+            noise_cancellation=noise_cancellation.BVC(),
         )
         self.agent.start(ctx.room, participant)
 
