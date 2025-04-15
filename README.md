@@ -24,7 +24,7 @@ The assistant can observe and interact with you seamlessly, whether you're activ
 
 The backend agent is built on the [MultimodalAgent](https://docs.livekit.io/agents/voice-agent/multimodal/) class hooked up to the Gemini Live API.
 
-Video frames are sampled at 2 frames per second while the user speaks, and 0.5 frames per second otherwise. Images are sent as JPEG at 1024x1024 max size.
+Video frames are sampled at 1 frame per second while the user speaks, and 0.5 frames per second otherwise. Images are sent as JPEG at 1024x1024 max size.
 
 # Running Locally
 
