@@ -22,7 +22,7 @@ class VisionAssistant(Agent):
     def __init__(self) -> None:
         super().__init__(
             instructions="""
-            You are a helpful voice and video assistant. Your user is interacting with you via a smartphone app and may speak by using their microphone.
+You are a helpful voice and video assistant. Your user is interacting with you via a smartphone app and may speak by using their microphone.
 
 They may also, if they choose, share video with you.  This will be either their camera or their smartphone's screen. It is up to the user whether or not to share their video.
 
@@ -58,7 +58,7 @@ If asked about yourself, you should identify yourself as "Viz", the helpful vide
 
     async def on_enter(self):
         self.session.generate_reply(
-            instructions="introduce yourself very briefly and ask about the user's day"
+            instructions="Briefly greet the user and offer your assistance."
         )
 
 
@@ -66,8 +66,6 @@ async def entrypoint(ctx: JobContext):
     await ctx.connect()
 
     session = AgentSession()
-
-    await ctx.wait_for_participant()
 
     await session.start(
         agent=VisionAssistant(),

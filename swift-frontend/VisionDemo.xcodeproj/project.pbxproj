@@ -50,7 +50,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				.env.example.xcconfig,
-				.env.xcconfig,
 				Info.plist,
 				VisionDemo.xcconfig,
 			);

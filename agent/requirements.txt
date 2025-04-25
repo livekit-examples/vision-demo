@@ -1,4 +1,4 @@
-livekit-agents[google]~=1.0
+livekit-agents[google,images]~=1.0
 livekit-plugins-noise-cancellation~=0.2
 python-dotenv
 asyncio
