@@ -10,6 +10,9 @@ class ChatContext: ObservableObject {
     @Published private(set) var agentParticipant: RemoteParticipant?
 
     var cameraDimensions: Dimensions {
+#if os(visionOS)
+        return Dimensions(width: 600, height: 400)
+#else
         let screen = UIScreen.main
         let availableWidth = screen.bounds.width - 48
         let availableHeight = screen.bounds.height - 320
@@ -18,6 +21,7 @@ class ChatContext: ObservableObject {
         let height = min(Int32(availableHeight * screen.scale), 1920)
 
         return Dimensions(width: width & ~1, height: height & ~1)
+#endif
     }
 
     init() {
@@ -47,7 +51,19 @@ class ChatContext: ObservableObject {
         agentParticipant = nil
     }
 
+    weak var arCameraTrack: LocalTrackPublication?
+
     func setCamera(enabled: Bool) async throws {
+#if os(visionOS)
+        if enabled {
+            let track = LocalVideoTrack.createARCameraTrack()
+            arCameraTrack = try await room.localParticipant.publish(videoTrack: track)
+        } else if let arCameraTrack {
+            try await room.localParticipant.unpublish(publication: arCameraTrack)
+            self.arCameraTrack = nil
+        }
+
+#else
         guard let device = AVCaptureDevice.devices().first(where: { $0.facingPosition == .back }) ?? AVCaptureDevice
             .devices().first
         else {
@@ -61,6 +77,7 @@ class ChatContext: ObservableObject {
                 dimensions: Dimensions(width: cameraDimensions.height, height: cameraDimensions.width)
             )
         )
+#endif
     }
 }
 

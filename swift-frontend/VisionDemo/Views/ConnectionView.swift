@@ -26,7 +26,7 @@ struct ConnectionView: View {
                     Task {
                         isConnecting = true
 
-                        let roomName = "room-\(Int.random(in: 1000 ... 9999))"
+                        let roomName = "test-room"//''"room-\(Int.random(in: 1000 ... 9999))"
                         let participantName = "user-\(Int.random(in: 1000 ... 9999))"
 
                         do {
