@@ -1,7 +1,7 @@
 /// An example service for fetching LiveKit authentication tokens
 ///
 /// To use the LiveKit Cloud sandbox (development only)
-/// - Enable your sandbox here https://cloud.livekit.io/projects/p_/sandbox/templates/token-server
+/// - Enable the token server from your project's Options on the Settings page: https://cloud.livekit.io/projects/p_/settings/project
 /// - Create .env.xcconfig with your LIVEKIT_SANDBOX_ID
 ///
 /// To use a hardcoded token (development only)
