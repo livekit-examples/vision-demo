@@ -1,4 +1,7 @@
 > [!WARNING]
+> This example is archived and no longer maintained. For current examples, see [LiveKit Agents examples](https://github.com/livekit/agents/tree/main/examples).
+
+> [!WARNING]
 > This example is outdated. While it still works great, we've now added built-in vision support to a whole set of new [frontend starter apps](https://docs.livekit.io/agents/start/frontend/#starter-apps) for every platform and [live video](https://docs.livekit.io/agents/build/vision/#video) is easy to add to the [Python agent starter](https://github.com/livekit-example/agent-starter-python) repository for the latest example.
 
 # LiveKit Vision Demo
